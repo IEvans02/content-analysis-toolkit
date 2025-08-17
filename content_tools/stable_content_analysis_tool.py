@@ -1,5 +1,4 @@
 import streamlit as st
-import openai
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -235,8 +234,15 @@ except Exception:
 if not openai_api_key:
     openai_api_key = st.text_input("Enter your OpenAI API Key (optional)", type="password")
 
-if openai_api_key:
-    openai.api_key = openai_api_key
+# Try to import OpenAI (optional dependency)
+try:
+    import openai
+    OPENAI_AVAILABLE = True
+    if openai_api_key:
+        openai.api_key = openai_api_key
+except ImportError:
+    OPENAI_AVAILABLE = False
+    # OpenAI is optional - the tool works fine without it
 
 # --- Header with S&S inspired styling ---
 st.markdown("""
