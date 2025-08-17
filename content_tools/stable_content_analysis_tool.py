@@ -672,7 +672,7 @@ st.sidebar.header("🔧 Analysis Configuration")
 
 analysis_mode = st.sidebar.selectbox(
     "Select Analysis Mode",
-    ["Content Scoring", "Basic Text Analysis", "Thematic Summary", "Document Comparison"]
+    ["Content Scoring", "Basic Text Analysis", "Thematic Summary", "Custom Prompt Analysis", "Document Comparison"]
 )
 
 target_keywords = st.sidebar.text_input(
@@ -1159,6 +1159,238 @@ KEY EXCERPTS:
                 file_name="thematic_analysis.txt",
                 mime="text/plain"
             )
+
+elif analysis_mode == "Custom Prompt Analysis":
+    st.markdown('<h2 class="section-header">🤖 Custom Prompt Analysis</h2>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="content-card">
+        <p>Upload any document and ask specific questions or request custom analysis. 
+        Perfect for targeted insights, Q&A, and specific analysis requests.</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Input options
+    input_option = st.radio(
+        "Choose input method:",
+        ["📝 Paste Text", "📁 Upload File"],
+        horizontal=True,
+        key="custom_prompt_input"
+    )
+    
+    content_input = ""
+    
+    if input_option == "📝 Paste Text":
+        content_input = st.text_area(
+            "Enter your content for custom analysis:",
+            height=200,
+            placeholder="Paste your text, document content, or any text you want to analyze with custom prompts..."
+        )
+    else:
+        uploaded_file = st.file_uploader(
+            "Upload a file for custom prompt analysis",
+            type=FileProcessor.get_supported_formats(),
+            help=f"Supported formats: {', '.join(FileProcessor.get_supported_formats())}",
+            key="custom_prompt_upload"
+        )
+        
+        if uploaded_file is not None:
+            content_input = FileProcessor.extract_text_from_file(uploaded_file)
+            if content_input:
+                st.success(f"✅ Processed {uploaded_file.name}")
+    
+    # Show document preview if available
+    if content_input:
+        with st.expander("📄 Document Preview", expanded=False):
+            preview_text = content_input[:1000] + "..." if len(content_input) > 1000 else content_input
+            st.text_area("Content preview:", preview_text, height=150, key="preview")
+    
+    # Prompt examples section
+    st.markdown("### 💡 Example Prompts")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        **📊 Analysis & Insights:**
+        - "Summarize the main points of this document"
+        - "What are the key findings and conclusions?"
+        - "Analyze the strengths and weaknesses mentioned"
+        - "What recommendations are provided?"
+        """)
+    
+    with col2:
+        st.markdown("""
+        **🎯 Specific Questions:**
+        - "What does this say about market trends?"
+        - "What are the main risks identified?"
+        - "What action items or next steps are mentioned?"
+        - "How does this relate to [specific topic]?"
+        """)
+    
+    # Custom prompt input
+    user_prompt = st.text_area(
+        "🤖 Enter your analysis prompt:",
+        placeholder="e.g., 'Summarize the key findings and recommendations from this report'",
+        height=100
+    )
+    
+    # Analysis button and processing
+    if content_input and user_prompt and st.button("🔍 Analyze with Custom Prompt", type="primary"):
+        
+        with st.spinner("🤖 Analyzing content with your custom prompt..."):
+            # Custom analysis logic
+            if OPENAI_AVAILABLE and openai_api_key:
+                # AI-powered analysis
+                try:
+                    # Limit text length for API
+                    text_limited = content_input[:4000] if len(content_input) > 4000 else content_input
+                    
+                    response = openai.ChatCompletion.create(
+                        model="gpt-3.5-turbo",
+                        messages=[
+                            {"role": "system", "content": "You are a helpful document analyst. Provide detailed, structured analysis based on the user's prompt."},
+                            {"role": "user", "content": f"Document content:\n{text_limited}\n\nAnalysis request: {user_prompt}\n\nPlease provide a detailed analysis."}
+                        ],
+                        max_tokens=1000,
+                        temperature=0.3
+                    )
+                    
+                    ai_analysis = response.choices[0].message.content
+                    analysis_method = "AI-powered (OpenAI)"
+                    
+                except Exception as e:
+                    st.error(f"AI analysis failed: {str(e)}")
+                    ai_analysis = None
+                    analysis_method = "Basic analysis (AI failed)"
+            else:
+                ai_analysis = None
+                analysis_method = "Basic analysis"
+            
+            # If AI analysis failed or not available, use basic analysis
+            if not ai_analysis:
+                words = content_input.lower().split()
+                sentences = re.split(r'[.!?]+', content_input)
+                
+                # Basic keyword extraction based on prompt
+                prompt_keywords = re.findall(r'\b\w{3,}\b', user_prompt.lower())
+                found_keywords = []
+                
+                for keyword in prompt_keywords:
+                    if keyword in content_input.lower():
+                        count = content_input.lower().count(keyword)
+                        found_keywords.append(f"{keyword} ({count} times)")
+                
+                # Basic sentiment
+                positive_words = ['good', 'great', 'excellent', 'positive', 'success', 'wonderful', 'amazing', 'effective', 'strong', 'beneficial']
+                negative_words = ['bad', 'terrible', 'awful', 'negative', 'failure', 'horrible', 'disappointing', 'weak', 'poor', 'problematic']
+                
+                pos_count = sum(1 for word in words if word in positive_words)
+                neg_count = sum(1 for word in words if word in negative_words)
+                
+                sentiment = "Neutral"
+                if pos_count > neg_count:
+                    sentiment = "Positive"
+                elif neg_count > pos_count:
+                    sentiment = "Negative"
+                
+                # Generate basic analysis
+                ai_analysis = f"""
+**Analysis for: "{user_prompt}"**
+
+**Document Overview:**
+- Word Count: {len(words)}
+- Sentence Count: {len([s for s in sentences if s.strip()])}
+- Character Count: {len(content_input)}
+
+**Content Analysis:**
+- Overall Sentiment: {sentiment}
+- Positive indicators: {pos_count}
+- Negative indicators: {neg_count}
+
+**Keyword Relevance:**
+{chr(10).join(['• ' + kw for kw in found_keywords]) if found_keywords else '• No specific keywords from your prompt found in the document.'}
+
+**Summary:**
+This document appears to be {sentiment.lower()} in tone. Based on your prompt "{user_prompt}", I've identified the above patterns. For more detailed analysis, consider providing an OpenAI API key for AI-powered insights.
+                """
+        
+        # Display results in organized tabs
+        tab1, tab2, tab3 = st.tabs(["🤖 Analysis Results", "📊 Document Stats", "💾 Export"])
+        
+        with tab1:
+            st.subheader(f"Analysis for: \"{user_prompt}\"")
+            st.markdown(ai_analysis)
+            
+            # Analysis metadata
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Analysis Method", analysis_method)
+            with col2:
+                st.metric("Content Length", f"{len(content_input.split())} words")
+        
+        with tab2:
+            st.subheader("📈 Document Statistics")
+            
+            col1, col2, col3, col4 = st.columns(4)
+            words = len(content_input.split())
+            sentences = len(re.split(r'[.!?]+', content_input))
+            paragraphs = len([p for p in content_input.split('\n\n') if p.strip()])
+            
+            with col1:
+                st.metric("Words", words)
+            with col2:
+                st.metric("Sentences", sentences)
+            with col3:
+                st.metric("Paragraphs", paragraphs)
+            with col4:
+                avg_words_per_sentence = round(words/sentences if sentences > 0 else 0, 1)
+                st.metric("Avg Words/Sentence", avg_words_per_sentence)
+            
+            # Word frequency analysis
+            word_freq = Counter(content_input.lower().split())
+            # Remove common stop words
+            stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were'}
+            filtered_freq = {word: freq for word, freq in word_freq.items() if word not in stop_words and len(word) > 2}
+            top_words = dict(Counter(filtered_freq).most_common(10))
+            
+            if top_words:
+                st.subheader("🔤 Most Frequent Words")
+                words_df = pd.DataFrame(list(top_words.items()), columns=['Word', 'Frequency'])
+                fig = px.bar(words_df, x='Word', y='Frequency', title="Top Words in Document")
+                fig.update_xaxes(tickangle=45)
+                st.plotly_chart(fig)
+        
+        with tab3:
+            st.subheader("📤 Export Analysis")
+            
+            export_text = f"""
+CUSTOM PROMPT ANALYSIS
+======================
+
+Prompt: {user_prompt}
+Analysis Method: {analysis_method}
+Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+
+ANALYSIS RESULTS:
+{ai_analysis}
+
+DOCUMENT STATISTICS:
+- Word Count: {len(content_input.split())}
+- Character Count: {len(content_input)}
+- Sentences: {len(re.split(r'[.!?]+', content_input))}
+            """
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.download_button(
+                    label="💾 Download Analysis",
+                    data=export_text,
+                    file_name=f"custom_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt",
+                    mime="text/plain"
+                )
+            
+            with col2:
+                if st.button("📋 Copy to Clipboard"):
+                    st.code(export_text, language='text')
 
 elif analysis_mode == "Document Comparison":
     st.markdown('<h2 class="section-header">⚖️ Document Comparison</h2>', unsafe_allow_html=True)
