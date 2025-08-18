@@ -34,7 +34,7 @@ except ImportError:
 
 # --- Configuration ---
 st.set_page_config(
-    page_title="Stable Content Analysis Tool",
+    page_title="Content Analysis Tool",
     page_icon="🔬",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -247,9 +247,9 @@ except ImportError:
 # --- Header with S&S inspired styling ---
 st.markdown("""
 <div class="main-header">
-    <h1>🔬 Stable Content Analysis Tool</h1>
-    <p>Comprehensive content analysis with thematic summaries, word maps, and scoring</p>
-    <div class="features">Content scoring • Thematic analysis • Word clouds • Document comparison • Multiple file formats</div>
+    <h1>🔬 Content Analysis Tool</h1>
+    <p>AI-powered messaging analysis and competitive comparison for marketing professionals</p>
+    <div class="features">Messaging comparison • Brand analysis • Competitive insights • Content scoring • Thematic analysis</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -1602,20 +1602,20 @@ st.markdown("""
 <div style='margin-top: 4rem; padding: 3rem 0 2rem 0; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); 
             border-radius: 20px 20px 0 0; color: white; text-align: center;'>
     <div style='font-size: 1.1rem; font-weight: 300; margin-bottom: 1rem;'>
-        🔬 <strong style='font-weight: 500;'>Stable Content Analysis Tool</strong>
+        🔬 <strong style='font-weight: 500;'>Content Analysis Tool</strong>
     </div>
     <div style='font-size: 0.9rem; opacity: 0.9; margin-bottom: 1.5rem; line-height: 1.6;'>
         With keen attention to detail and a knack for establishing insights that matter,<br>
-        we deliver 'aha' analysis moments that intrigue even the most discerning content creators.
+        we deliver 'aha' analysis moments for marketing messaging and competitive comparison.
     </div>
     <div style='display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 1.5rem;'>
-        <div style='opacity: 0.8;'>📊 Content Scoring</div>
-        <div style='opacity: 0.8;'>🎯 Thematic Analysis</div>
-        <div style='opacity: 0.8;'>☁️ Word Clouds</div>
-        <div style='opacity: 0.8;'>⚖️ Document Comparison</div>
+        <div style='opacity: 0.8;'>📊 Messaging Analysis</div>
+        <div style='opacity: 0.8;'>🎯 Brand Insights</div>
+        <div style='opacity: 0.8;'>⚖️ Competitive Comparison</div>
+        <div style='opacity: 0.8;'>🤖 Custom Analysis</div>
     </div>
     <div style='font-size: 0.8rem; opacity: 0.7; font-style: italic;'>
-        Built for reliable analysis without heavy dependencies • Perfect for content creators, marketers, and researchers
+        AI-powered analysis for marketing professionals • Messaging frameworks • Competitive intelligence
     </div>
 </div>
 """, unsafe_allow_html=True)
