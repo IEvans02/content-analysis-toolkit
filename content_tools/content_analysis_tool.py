@@ -217,11 +217,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown("""
-**🔬 Stable Content Analysis Tool**
+**🔬 Content Analysis Tool**
 - **Content Scoring**: Analyze readability, sentiment, engagement, SEO, and quality
 - **Basic Summarization**: Simple text analysis without heavy models
 - **File Support**: Upload PDF, Word, Text, and Markdown files
-- **Stable Operation**: Optimized for reliability without model crashes
+- **Reliable Operation**: Optimized for consistent performance
 """)
 
 # --- API Key Setup ---
@@ -334,8 +334,8 @@ class FileProcessor:
         return formats
 
 # --- Content Analysis Classes ---
-class StableContentScorer:
-    """Stable content scoring without heavy models"""
+class ContentScorer:
+    """Professional content scoring for marketing analysis"""
     
     def __init__(self, openai_api_key=None):
         self.openai_api_key = openai_api_key
@@ -718,7 +718,7 @@ if analysis_mode == "Content Scoring":
                     st.text_area("Extracted content preview:", preview_text, height=150, disabled=True)
     
     if content_input and st.button("🔍 Analyze Content", type="primary"):
-        scorer = StableContentScorer(openai_api_key)
+        scorer = ContentScorer(openai_api_key)
         
         with st.spinner("Analyzing content..."):
             results = scorer.comprehensive_score(content_input, target_keywords)
@@ -1434,7 +1434,7 @@ elif analysis_mode == "Document Comparison":
         docs.append(doc_content)
     
     if all(d.strip() for d in docs) and st.button("⚖️ Compare Documents", type="primary"):
-        scorer = StableContentScorer(openai_api_key)
+        scorer = ContentScorer(openai_api_key)
         summarizer = BasicSummarizer()
         
         with st.spinner("Analyzing all documents..."):

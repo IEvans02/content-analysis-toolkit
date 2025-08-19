@@ -19,7 +19,7 @@ The app will automatically open at `http://localhost:8501`
 Tim_AI_Work/
 ├── 🔬 run_content_tool.py          # Quick launcher script
 ├── 📊 content_tools/               # Main content analysis tools
-│   ├── stable_content_analysis_tool.py    # 🌟 MAIN TOOL (S&S styled)
+│   ├── content_analysis_tool.py           # 🌟 MAIN TOOL (Marketing focused)
 │   ├── app.py                      # Original interview transcript analyzer
 │   ├── content_scoring_tool_lite.py       # Lightweight version
 │   ├── unified_content_analysis_tool.py   # Full ML version

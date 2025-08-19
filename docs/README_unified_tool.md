@@ -54,7 +54,7 @@ A comprehensive tool that combines **content scoring** with **text summarization
 
 ### **Advanced Features:**
 - **🤖 Model flexibility**: Graceful degradation when models unavailable
-- **🔧 Configurable settings**: Adjustable summary length and keywords
+- **🔧 Configurable settings**: Adjustable analysis parameters and keywords
 - **📈 Interactive visualizations**: Plotly charts and matplotlib graphics
 - **💾 Export capabilities**: JSON results for further analysis
 

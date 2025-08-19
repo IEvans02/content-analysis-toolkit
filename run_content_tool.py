@@ -3,7 +3,7 @@
 🔬 Content Analysis Tool Launcher
 ==================================
 
-Quick launcher for the stable content analysis tool with automatic dependency management.
+Quick launcher for the content analysis tool with automatic dependency management.
 """
 
 import subprocess
@@ -11,7 +11,7 @@ import sys
 import os
 
 def main():
-    print("🔬 Starting Stable Content Analysis Tool...")
+    print("🔬 Starting Content Analysis Tool...")
     print("=" * 50)
     
     # Change to the script directory
@@ -26,7 +26,7 @@ def main():
         venv_activation = "source venv/bin/activate && "
     
     # Launch the streamlit app
-    tool_path = "content_tools/stable_content_analysis_tool.py"
+    tool_path = "content_tools/content_analysis_tool.py"
     cmd = f"streamlit run {tool_path}"
     
     print(f"🚀 Launching: {cmd}")
